@@ -8,7 +8,8 @@ from src.loading.loading import DataLoader
 from src.preprocessing.preprocessing import DataPreprocessor
 from src.model.model import DeepHedging_BS
 from src.train.train import Train
-
+from src.inference.inference import Inference
+from src.evaluation.evaluation import Evaluator
 random.seed(42)
 
 def main(logger, conf):
@@ -34,12 +35,27 @@ def main(logger, conf):
         model = DeepHedging_BS(conf)
         logger.debug("Creating BS RNN model architecture.")
     train_class = Train(conf, model, train_loader, val_loader)
-    training_loss, val_loss = train_class.train()
-    time_3 = time()
+    if conf["model_init"]["train"]:
+        training_loss, val_loss = train_class.train()
+        train_class.save_model("model_test")
+        eval_class = Evaluator(conf, training_loss, val_loss)
+        eval_class.evaluate_model()
+        time_3 = time()
+        logger.debug(
+            "Time to create, train and evaluate the model:" + str(time_3 - time_2)
+        )
+    else:
+        model = train_class.load_saved_model("model_test")
+        time_3 = time()
+        logger.debug(
+            "Time to load a saved model:" + str(time_3 - time_2)
+        )
+    inference_class = Inference(conf, model)
+    inference_class.save_predictions()
+    time_4 = time()
     logger.debug(
-        "Time to create and train the model:" + str(time_3 - time_2)
+        "Time to make predictions:" + str(time_4 - time_3)
     )
-    
 if __name__ == "__main__":
     path_conf = "params/config.json"
     conf = json.load(open(path_conf, "r"))

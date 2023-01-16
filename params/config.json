@@ -2,7 +2,13 @@
 "input_folder":"data/",
 "train_data_bs":"Dataset_1_train_asset.csv",
 "pay_off_bs":"Dataset_1_train_payoff.csv",
-"test_data_bs":"Dataset_1_test_asset.csv"
+"test_data_bs":"Dataset_1_test_asset.csv",
+"output_folder":"output/",
+"inference_folder":"inference/",
+"model_out_folder":"model/",
+"eval_folder":"evaluation/",
+"output_file":"predictions.csv",
+"evaluation_file":"loss.jpg"
 },
 
 "path_log":"params/logs.log",
@@ -11,7 +17,8 @@
 "model_init":{"bs_model":true,
 "cost_bs":0.0,
 "cost_hest":0.01,
-"batch_size":256},
+"batch_size":256,
+"train":true},
 
 "BS_model":{"input_size":1,
   "HL_size":16,

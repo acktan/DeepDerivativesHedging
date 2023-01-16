@@ -7,6 +7,7 @@ import torch.nn as nn
 import torch.optim as optim
 import torch.nn.functional as F
 from tqdm import tqdm
+from src.model.model import DeepHedging_BS
 
 warnings.filterwarnings("ignore")
 logger = logging.getLogger("main_logger")
@@ -126,3 +127,23 @@ class Train():
             val_loss.append(epoch_test_loss)
             logger.info("Test loss: {}".format(epoch_test_loss))
         return train_loss, val_loss
+    
+    def save_model(self, model_name):
+        """Save model in output folder."""
+        directory = self.conf["paths"]["directory"]
+        output_folder = self.conf["paths"]["output_folder"]
+        model_out_folder = self.conf["paths"]["model_out_folder"]
+        PATH = directory + output_folder + model_out_folder + model_name
+        torch.save(self.model.state_dict(), PATH)
+        return None
+    
+    def load_saved_model(self, model_name):
+        """Load saved model."""
+        directory = self.conf["paths"]["directory"]
+        output_folder = self.conf["paths"]["output_folder"]
+        model_out_folder = self.conf["paths"]["model_out_folder"]
+        PATH = directory + output_folder + model_out_folder + model_name
+        if self.conf["model_init"]["bs_model"]:
+            model_loaded = DeepHedging_BS(self.conf)
+            model_loaded.load_state_dict(torch.load(PATH))
+        return model_loaded
