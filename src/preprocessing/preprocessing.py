@@ -14,6 +14,9 @@ class DataPreprocessor():
 
     Args:
         conf: the config file
+        df_train: dataframe with stock price for train set.
+        pay_off: dataframe with payoff for train set.
+        df_growth: dataframe with absolute growth of stock price for train set.
     Returns:
         train_loader, val_loader: torch dataloaders for training and validation sets.   
     """

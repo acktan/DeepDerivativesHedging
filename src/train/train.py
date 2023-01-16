@@ -14,7 +14,16 @@ logger = logging.getLogger("main_logger")
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
 class Train():
-    """Train RNN model."""
+    """Train RNN model.
+    
+    Args:
+        conf: the config file.
+        model: the model.
+        train_loader: the training dataloader.
+        val_loader: the validation dataloader.
+    Returns:
+        The trianing and validation losses.
+    """
     def __init__(self, conf, model, train_loader, val_loader):
         self.conf = conf
         self.model = model
