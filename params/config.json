@@ -3,5 +3,14 @@
 "train_data_bs":"Dataset_1_train_asset.csv",
 "pay_off_bs":"Dataset_1_train_payoff.csv",
 "test_data_bs":"Dataset_1_test_asset.csv"
-}
+},
+
+"path_log":"params/logs.log",
+"log_level":"DEBUG",
+
+"model_init":{"bs_model":true,
+"cost_bs":0.0,
+"cost_hest":0.01,
+"batch_size":256}
+
 }
