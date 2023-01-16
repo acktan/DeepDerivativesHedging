@@ -11,6 +11,13 @@
 "model_init":{"bs_model":true,
 "cost_bs":0.0,
 "cost_hest":0.01,
-"batch_size":256}
+"batch_size":256},
+
+"BS_model":{"input_size":1,
+  "HL_size":16,
+  "output_size":1,
+  "lr":0.01,
+  "num_epochs":50
+}
 
 }

@@ -6,6 +6,8 @@ from time import time
 from src.utils.utils import my_get_logger
 from src.loading.loading import DataLoader
 from src.preprocessing.preprocessing import DataPreprocessor
+from src.model.model import DeepHedging_BS
+from src.train.train import Train
 
 random.seed(42)
 
@@ -28,8 +30,16 @@ def main(logger, conf):
     logger.debug(
         "Time to preprocess data:" + str(time_2 - time_1)
     )
-
-
+    if conf["model_init"]["bs_model"]:
+        model = DeepHedging_BS(conf)
+        logger.debug("Creating BS RNN model architecture.")
+    train_class = Train(conf, model, train_loader, val_loader)
+    training_loss, val_loss = train_class.train()
+    time_3 = time()
+    logger.debug(
+        "Time to create and train the model:" + str(time_3 - time_2)
+    )
+    
 if __name__ == "__main__":
     path_conf = "params/config.json"
     conf = json.load(open(path_conf, "r"))
