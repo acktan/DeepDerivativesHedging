@@ -1,14 +1,19 @@
 {"paths":{"directory":"/home/jovyan/natives_deephedging/",
 "input_folder":"data/",
 "train_data_bs":"Dataset_1_train_asset.csv",
+"train_data_hest_1":"Dataset_2_train_instrument_1.csv",
+"train_data_hest_2":"Dataset_2_train_instrument_2.csv",
 "pay_off_bs":"Dataset_1_train_payoff.csv",
+"pay_off_hest":"Dataset_2_train_payoff.csv",
 "test_data_bs":"Dataset_1_test_asset.csv",
+"test_data_hest_1":"Dataset_2_test_instrument_1.csv",
+"test_data_hest_2":"Dataset_2_test_instrument_2.csv",
 "output_folder":"output/",
 "inference_folder":"inference/",
 "model_out_folder":"model/",
 "eval_folder":"evaluation/",
-"output_file":"predictions.csv",
-"evaluation_file":"loss.jpg"
+"output_file":"predictions",
+"evaluation_file":"loss"
 },
 
 "path_log":"params/logs.log",
@@ -18,13 +23,18 @@
 "cost_bs":0.0,
 "cost_hest":0.01,
 "batch_size":256,
-"train":true},
+"train":false},
 
 "BS_model":{"input_size":1,
   "HL_size":16,
   "output_size":1,
   "lr":0.01,
   "num_epochs":50
+},
+"Hest_model":{"input_size":2,
+  "HL_size":16,
+  "output_size":1,
+  "lr":0.01,
+  "num_epochs":50
 }
-
 }

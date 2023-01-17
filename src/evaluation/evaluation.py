@@ -2,6 +2,7 @@
 
 import logging
 import warnings
+import time
 import matplotlib.pyplot as plt
 import matplotlib.style as style
 
@@ -27,6 +28,11 @@ class Evaluator():
         output_folder = self.conf["paths"]["output_folder"]
         eval_folder = self.conf["paths"]["eval_folder"]
         evaluation_file = self.conf["paths"]["evaluation_file"]
+        timestr = time.strftime("%Y%m%d-%H%M%S")
+        if self.conf["model_init"]["bs_model"]:
+            evaluation_file = evaluation_file + "_bs_" + timestr + ".jpg"
+        else:
+            evaluation_file = evaluation_file + "_hest_" + timestr + ".jpg"
         path = directory + output_folder + eval_folder + evaluation_file
         val_loss = self.val_loss
         train_loss = self.train_loss

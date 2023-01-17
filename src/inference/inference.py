@@ -21,7 +21,7 @@ class Inference():
         self.conf = conf
         self.model = model
     
-    def load_test_data(self):
+    def load_test_data_bs(self):
         """Load test data.
         
         Args:
@@ -37,6 +37,26 @@ class Inference():
         test_X = torch.Tensor(test_X)
         return test_X
     
+    def load_test_data_hest(self):
+        """Load test data.
+        
+        Args:
+            None.
+        Returns:
+            The test dataset.
+        """
+        directory = self.conf["paths"]["directory"]
+        input_folder = self.conf["paths"]["input_folder"]
+        path_S = self.conf["paths"]["test_data_hest_1"]
+        path_var = self.conf["paths"]["test_data_hest_2"]
+        test_S = pd.read_csv(directory + input_folder + path_S, header=None)
+        test_var= pd.read_csv(directory + input_folder + path_var, header=None)
+        test_S = np.array(test_S.iloc[:,:30].values.astype('float32'))
+        test_var = np.array(test_var.iloc[:,:30].values.astype('float32'))
+        test_S = torch.Tensor(test_S)
+        test_var = torch.Tensor(test_var)
+        return test_S, test_var
+    
     def predict(self):
         """Make predictions and save in dataframe.
         
@@ -45,9 +65,15 @@ class Inference():
         Returns:
             The predictions dataframe.
         """
-        test_X = self.load_test_data()
-        test_X = test_X.unsqueeze(-1)
-        test_prediction = self.model(test_X)
+        if self.conf["model_init"]["bs_model"]:
+            test_X = self.load_test_data_bs()
+            test_X = test_X.unsqueeze(-1)
+            test_prediction = self.model(test_X)
+        else:
+            test_S, test_var = self.load_test_data_hest()
+            test_X = torch.cat((test_S.unsqueeze(-1),
+                                test_var.unsqueeze(-1)), 2)
+            test_prediction = self.model(test_X)           
         predictions = pd.DataFrame(test_prediction.detach().numpy().transpose())
         return predictions
     
@@ -64,6 +90,10 @@ class Inference():
         output_folder = self.conf["paths"]["output_folder"]
         inference_folder = self.conf["paths"]["inference_folder"]
         output_file = self.conf["paths"]["output_file"]
+        if self.conf["model_init"]["bs_model"]:
+            output_file = output_file + "_bs" + ".csv"
+        else:
+            output_file = output_file + "_hest" + ".csv"
         predictions.to_csv(directory + output_folder +
                            inference_folder + output_file,
                            header=None, index=False)

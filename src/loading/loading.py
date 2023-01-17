@@ -22,6 +22,8 @@ class DataLoader():
     
     def __init__(self, conf):
         self.conf = conf
+        self.directory = conf["paths"]["directory"]
+        self.input_folder = conf["paths"]["input_folder"]
 
     def col_numeric_names(self, df):
         """Return df with column names from 0 to 30.
@@ -75,29 +77,35 @@ class DataLoader():
         Returns:
             Name of files within the input directory.
         """
-        directory = self.conf["paths"]["directory"]
-        input_folder = self.conf["paths"]["input_folder"]
-        return os.listdir(directory + input_folder)
+        return os.listdir(self.directory + self.input_folder)
     
-    def get_train_data_bs(self):
-        """Return the training data for Black & Scholes model.
+    def get_train_data(self):
+        """Return the training data for Black & Scholes or Heston model.
         
         Args:
             conf: the config file.
         Returns:
-            df_train: training data containing stock prices.
+            train1: training data containing stock prices.
+            train2: training data containing variance swap for Heston,
+            None for for BS.
             pay_off: training data containing payoffs.
-            df_growth: training data containing growth of stock prices.
-            
         """
-        directory = self.conf["paths"]["directory"]
-        input_folder = self.conf["paths"]["input_folder"]
-        train_data = self.conf["paths"]["train_data_bs"]
-        pay_off_data = self.conf["paths"]["pay_off_bs"]
-        df_train = pd.read_csv(directory + input_folder + train_data,
-                               header=None)
-        df_growth = self.absolute_growth(df_train)
-        pay_off = pd.read_csv(directory + input_folder + pay_off_data,
-                              header=None)
-        return df_train, df_growth, pay_off
+        path = self.directory + self.input_folder
+        if self.conf["model_init"]["bs_model"]:
+            trainPath = path + self.conf["paths"]["train_data_bs"]
+            targetPath = path + self.conf["paths"]["pay_off_bs"]
+            S = pd.read_csv(trainPath,
+                            header=None)
+            var = None
+            pay_off = pd.read_csv(targetPath,
+                                  header=None)
+        else:
+            trainPath1 = path + self.conf["paths"]["train_data_hest_1"]
+            trainPath2 = path + self.conf["paths"]["train_data_hest_2"]
+            targetPath = path + self.conf["paths"]["pay_off_hest"]
+            S = pd.read_csv(trainPath1, header=None)
+            var = pd.read_csv(trainPath2, header=None)
+            pay_off = pd.read_csv(targetPath, header=None)
+            
+        return S, var, pay_off
         
