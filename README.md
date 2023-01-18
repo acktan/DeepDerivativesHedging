@@ -53,6 +53,9 @@ Model folder includes the two pest models that we used in the Black Scholes and 
 ### 🔢 Params 
 Params folder includes the configuration file
 ### ℹ️ Src
+
+The Src folder contains all the different classes combined in the main.py file. The following is a description of all classes used.
+
 #### Evaluation
 
 The function *evaluate_model* is a method of the Evaluator class. The method takes in two inputs, train_loss and val_loss, which are lists of the training loss and validation loss respectively. The function plots the training loss and validation loss on the same graph, with the x-axis being the number of epochs and the y-axis being the loss. The function also saves the graph to a file in a specified directory.
@@ -94,8 +97,9 @@ An RNN (Recurrent Neural Network) layer with input size, hidden size and number 
 A linear layer with hidden size and output size as specified in the config file.
 The DeepHedging_Hest class initializes the following:
 
-    An RNN (Recurrent Neural Network) layer with input size, hidden size and number of layers as specified in the config file.
-    A linear layer with hidden size and output size as specified in the config file.
+   - An RNN (Recurrent Neural Network) layer with input size, hidden size and number of layers as specified in the config file.
+   - A linear layer with hidden size and output size as specified in the config file.
+
 Both the classes have a forward function that takes in a tensor S and processes it through the initialized layers. The output of the linear layer is returned and the size of the output is reduced by one dimension.
 
 #### Preprocessing
@@ -110,9 +114,9 @@ The *get_train_val_dataloader* method takes no inputs and returns two outputs, t
 
 The *Train* class is used to train an RNN model, either the Black-Scholes (BS) model or the Heston model. It takes in the config file, the model, the training dataloader and the validation dataloader as inputs. The class has several methods, including "loss()" that calculates the loss incurred by the predicted deltas, and "risk_measure()" which calculates a custom loss function for the BS Model. The "Train()" method is responsible for training the model, it uses the Adam optimizer, and it prints out the training and validation losses for each epoch. The class also has a method called "test()" which can be used to evaluate the performance of the trained model on unseen data. The model is trained on a device specified as CUDA if available or CPU.
 
-### Main.py
+### ❤️ Main.py
 
-This python file serves as the main script that runs the entire pipeline for the project. It starts by loading the config file and setting the random seed. Then it calls the DataLoader class to load the stock prices, variances and payoff. Next, it calls the DataPreprocessor class to split the data into training and validation sets and create dataloaders. Then, it calls the model class to create the model architecture. Then, it calls the Train class to train the model and save it or load a saved model. Next, it calls the Inference class to make predictions and saves them. Finally, it calls the Evaluator class to evaluate the performance of the model. The script also has a try-except block to catch any errors that might occur during the execution and log them. The script also has various debug statements to log the time taken for each step of the pipeline.
+This python file serves as the main script and heart of the repository that runs the entire pipeline for the project. It starts by loading the config file and setting the random seed. Then it calls the DataLoader class to load the stock prices, variances and payoff. Next, it calls the DataPreprocessor class to split the data into training and validation sets and create dataloaders. Then, it calls the model class to create the model architecture. Then, it calls the Train class to train the model and save it or load a saved model. Next, it calls the Inference class to make predictions and saves them. Finally, it calls the Evaluator class to evaluate the performance of the model. The script also has a try-except block to catch any errors that might occur during the execution and log them. The script also has various debug statements to log the time taken for each step of the pipeline.
 
 
 ## 📫 Contacts LinkedIn 
