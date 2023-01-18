@@ -10,7 +10,7 @@ The objective of the challenge is to replace classical hedging strategies founde
 To ensure that all libraries are installed pip install the requirements file:
 
 ```
-pip install - r requirements.txt
+pip install -r requirements.txt
 ```
 
 To run the model go to the console and run following command: 
@@ -47,11 +47,11 @@ Our repository is structured in the following way
 ### 📊 Data
 The Data folder contains all dataset used to train the models
 ### ↗️ Output
-In the Output folder we have the evaluation folder that includes the png of our explorative data analysis.
+In the Output folder we have the evaluation folder that includes the validation and training loss figure as evaluation of our train model.
 Inference folder contains the predicted deltas of our models. 
-Model folder includes the two pest models that we used in the Black Scholes and Heston case.
+Model folder includes the two best models that we used in the Black Scholes and Heston case.
 ### 🔢 Params 
-Params folder includes the configuration file
+Params folder includes the configuration file and a logs.log file that is added to view the log info and debug
 ### ℹ️ Src
 
 The Src folder contains all the different classes combined in the main.py file. The following is a description of all classes used.
