@@ -47,8 +47,6 @@ class Train():
         """
         S_delta = torch.diff(S, dim=1)
         S_delta_T = torch.transpose(S_delta, 0, 1).squeeze()
-        logger.info(f"Deltas shape: {deltas.shape}")
-        logger.info(f"S_T shape: {S_delta_T.shape}")
         delta_S = torch.diagonal(torch.matmul(deltas, S_delta_T))
         first_element = torch.abs(deltas[:,0]).unsqueeze(-1)
         third_element = torch.abs(deltas[:,-1]).unsqueeze(-1)
@@ -59,9 +57,6 @@ class Train():
             costs_V = costs * torch.diagonal(torch.matmul(delta_diff, var))
             V_delta = torch.diff(var, dim=1)
             V_delta_T = torch.transpose(V_delta, 0, 1).squeeze()
-            logger.info(f"Deltas shape: {deltas.shape}")
-            logger.info(f"V shape: {V_delta.shape}")
-            logger.info(f"V_T shape: {V_delta_T.shape}")
             delta_var = torch.diagonal(torch.matmul(deltas, V_delta_T))
             loss = loss - delta_var + costs_V
         return loss
@@ -142,8 +137,8 @@ class Train():
                 
                 train_S = self.prepare_input(S)
                 if not self.conf["model_init"]["bs_model"]:
-                    train_var = self.prepare_input(var)
-                    train_S = torch.cat((train_S, train_var), 2)
+                    #train_var = self.prepare_input(var)
+                    train_S = torch.cat((train_S, var), 2)
                     
                 deltas = self.model(train_S)
                 losses = self.loss(deltas, S, payoff, var, costs)
