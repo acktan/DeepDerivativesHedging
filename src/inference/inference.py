@@ -70,7 +70,7 @@ class Inference():
             test_X = test_X.unsqueeze(-1)
             test_X = prepare_input(test_X)
             test_prediction = self.model(test_X)
-            predictions = pd.DataFrame(test_prediction.detach().numpy().transpose())
+            predictions = pd.DataFrame(test_prediction.detach().numpy())#.transpose())
             return predictions
         else:
             test_S, test_var = self.load_test_data_hest()
@@ -78,8 +78,8 @@ class Inference():
             test_var = prepare_input(test_var.unsqueeze(-1))
             test_X = torch.cat((test_S, test_var), 2)
             test_prediction = self.model(test_X)
-            predictions_S = pd.DataFrame(test_prediction[:,:,0].detach().numpy().transpose())
-            predictions_V = pd.DataFrame(test_prediction[:,:,1].detach().numpy().transpose())
+            predictions_S = pd.DataFrame(test_prediction[:,:,0].detach().numpy())#.transpose())
+            predictions_V = pd.DataFrame(test_prediction[:,:,1].detach().numpy())#.transpose())
             return predictions_S, predictions_V
     
     def save_predictions(self):
