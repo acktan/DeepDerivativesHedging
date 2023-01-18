@@ -56,4 +56,28 @@ class DeepHedging_Hest(nn.Module):
         out, _ = self.rnn(S)
         out = self.linear(out)
         #out = self.softplus(out)
-        return out.squeeze()  
+        return out.squeeze()
+
+class DeepHedging_Hest_GRU(nn.Module):
+    """Create the model architecture for the Heston model.
+
+    Args:
+        conf: the config file.
+    Returns:
+        The Heston GRU model.
+    """
+    def __init__(self, conf):
+        super(DeepHedging_Hest_GRU, self).__init__()
+        input_size = conf["Hest_model"]["input_size"]
+        HL_size = conf["Hest_model"]["HL_size"]
+        output_size = conf["Hest_model"]["output_size"]
+        self.gru = torch.nn.GRU(input_size=input_size,
+                                hidden_size=HL_size,
+                                num_layers=1)
+        self.linear = torch.nn.Linear(HL_size, output_size)
+
+    def forward(self, S, hidden=None):
+        """Create the forward function for the model."""
+        out, hidden= self.gru(S, hidden) # for GRU
+        out = self.linear(out)
+        return out.squeeze()
