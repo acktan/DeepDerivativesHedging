@@ -4,8 +4,10 @@ import logging
 import warnings
 import time
 import torch
+import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.style as style
+from src.utils.utils import prepare_input
 
 warnings.filterwarnings("ignore")
 logger = logging.getLogger("main_logger")
@@ -58,13 +60,27 @@ class Evaluator():
         Return:
             Print the emprirical risk measure on the full training set.
         """
-        S = torch.Tensor(S).unsqueeze(-1)
-        payoff = torch.Tensor(payoff)
+        S = torch.Tensor(np.array(S)).unsqueeze(-1)
+        logger.info(f"shape:{S.shape}")
+        S_input = prepare_input(S)
+        payoff = torch.Tensor(np.array(payoff))
         if self.conf["model_init"]["bs_model"]:
-            costs = torch.Tensor([0.0] * train_S.shape[0])
-            var = torch.Tensor([0.0] * train_S.shape[0])
-            deltas = model(S)
+            costs = torch.Tensor([0.0] * S.shape[0])
+            var = torch.Tensor([0.0] * S.shape[0])
+            deltas = model(S_input)
             loss = train_class.loss(deltas, S, payoff, var, costs)
-            train_class.evaluation(loss)
+            risk_measure = train_class.evaluation(loss)
+            logger.info(f"The risk measure on the train set is:{risk_measure}")
+        else:
+            cost = self.conf["model_init"]["cost_hest"]
+            costs = torch.Tensor([cost] * S.shape[0])
+            var = torch.Tensor(np.array(v)).unsqueeze(-1)
+            var_input = prepare_input(var)
+            S_input = torch.cat((S_input, var_input), 2)
+            deltas = model(S_input)
+            loss = train_class.loss(deltas[:,:,0], S, payoff, var, costs, deltas[:,:,1])
+            risk_measure = train_class.evaluation(loss)
+            logger.info(f"The risk measure on the train set is:{risk_measure}")
+        return risk_measure
         
         

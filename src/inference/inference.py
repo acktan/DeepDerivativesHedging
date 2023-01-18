@@ -5,7 +5,7 @@ import warnings
 import torch
 import pandas as pd
 import numpy as np
-
+from src.utils.utils import prepare_input
 warnings.filterwarnings("ignore")
 logger = logging.getLogger("main_logger")
 
@@ -68,14 +68,19 @@ class Inference():
         if self.conf["model_init"]["bs_model"]:
             test_X = self.load_test_data_bs()
             test_X = test_X.unsqueeze(-1)
+            test_X = prepare_input(test_X)
             test_prediction = self.model(test_X)
+            predictions = pd.DataFrame(test_prediction.detach().numpy().transpose())
+            return predictions
         else:
             test_S, test_var = self.load_test_data_hest()
-            test_X = torch.cat((test_S.unsqueeze(-1),
-                                test_var.unsqueeze(-1)), 2)
-            test_prediction = self.model(test_X)           
-        predictions = pd.DataFrame(test_prediction.detach().numpy().transpose())
-        return predictions
+            test_S = prepare_input(test_S.unsqueeze(-1))
+            test_var = prepare_input(test_var.unsqueeze(-1))
+            test_X = torch.cat((test_S, test_var), 2)
+            test_prediction = self.model(test_X)
+            predictions_S = pd.DataFrame(test_prediction[:,:,0].detach().numpy().transpose())
+            predictions_V = pd.DataFrame(test_prediction[:,:,1].detach().numpy().transpose())
+            return predictions_S, predictions_V
     
     def save_predictions(self):
         """Make and save predictions in a csv file.
@@ -85,17 +90,24 @@ class Inference():
         Returns:
             None.
         """
-        predictions = self.predict()
         directory = self.conf["paths"]["directory"]
         output_folder = self.conf["paths"]["output_folder"]
         inference_folder = self.conf["paths"]["inference_folder"]
         output_file = self.conf["paths"]["output_file"]
         if self.conf["model_init"]["bs_model"]:
             output_file = output_file + "_bs" + ".csv"
+            predictions = self.predict()
+            predictions.to_csv(directory + output_folder +
+                           inference_folder + output_file,
+                           header=None, index=False)
         else:
             output_file = output_file + "_hest" + ".csv"
-        predictions.to_csv(directory + output_folder +
-                           inference_folder + output_file,
+            predictions_S, predictions_V = self.predict()
+            predictions_S.to_csv(directory + output_folder +
+                           inference_folder + "price_" + output_file,
+                           header=None, index=False)
+            predictions_V.to_csv(directory + output_folder +
+                           inference_folder + "var_" + output_file,
                            header=None, index=False)
         return None
         

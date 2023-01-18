@@ -47,8 +47,9 @@ def main(logger, conf):
     if conf["model_init"]["train"]:
         training_loss, val_loss = train_class.train()
         train_class.save_model("model")
-        eval_class = Evaluator(conf, training_loss, val_loss)
-        eval_class.evaluate_model()
+        eval_class = Evaluator(conf)
+        eval_class.evaluate_model(training_loss, val_loss)
+        risk_measure = eval_class.evaluate_train_dataset(model, S, var, pay_off, train_class)
         time_3 = time()
         logger.debug(
             "Time to create, train and evaluate the model:" + str(time_3 - time_2)
@@ -59,14 +60,14 @@ def main(logger, conf):
         logger.debug(
             "Time to load a saved model:" + str(time_3 - time_2)
         )
-    '''
+
     inference_class = Inference(conf, model)
     inference_class.save_predictions()
     time_4 = time()
     logger.debug(
         "Time to make predictions:" + str(time_4 - time_3)
     )
-    '''
+
 if __name__ == "__main__":
     path_conf = "params/config.json"
     conf = json.load(open(path_conf, "r"))

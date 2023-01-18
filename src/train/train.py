@@ -8,6 +8,7 @@ import torch.nn as nn
 import torch.optim as optim
 import torch.nn.functional as F
 from tqdm import tqdm
+from src.utils.utils import prepare_input
 from src.model.model import DeepHedging_BS, DeepHedging_Hest
 
 warnings.filterwarnings("ignore")
@@ -95,19 +96,6 @@ class Train():
         es_50 = loss[loss>=q1].mean()
         es_99 = loss[loss>=q2].mean()
         return (es_50 + es_99*beta)/(1+beta)
-        
-    def prepare_input(self, S):
-        """Standardize at row level.
-
-        Args:
-            S: tensor of stock prices.
-        Returns:
-            S: tensor of standardized stock prices.   
-        """
-        S_mean = torch.mean(S.squeeze(), 0)[-1]
-        S_std = torch.std(S.squeeze(), 0)[-1]
-        S = (S[:, :-1, :] - S_mean)/S_std
-        return S
     
     def train(self):
         """Train model and get training/val losses.
@@ -138,14 +126,13 @@ class Train():
                 payoff = train_payoff.to(device)
                 costs = train_costs.to(device)
                 
-                train_S = self.prepare_input(S)
+                train_S = prepare_input(S)
                 if self.conf["model_init"]["bs_model"]:
                     deltas = self.model(train_S)
                     losses = self.loss(deltas, S, payoff, var, costs)
                 else:
-                    train_var = self.prepare_input(var)
+                    train_var = prepare_input(var)
                     train_S = torch.cat((train_S, train_var), 2)
-                    logger.info(f"shape:{self.model(train_S).shape}")
                     deltas = self.model(train_S)
                     losses = self.loss(deltas[:,:,0], S, payoff, var, costs, deltas[:,:,1])
                     
@@ -170,13 +157,13 @@ class Train():
                 var = val_var.to(device).unsqueeze(-1)
                 payoff = val_payoff.to(device)
                 costs = val_costs.to(device)
-                val_S = self.prepare_input(S)
+                val_S = prepare_input(S)
                 
                 if self.conf["model_init"]["bs_model"]:
                     deltas = self.model(val_S)
                     losses = self.loss(deltas, S, payoff, var, costs)
                 else:
-                    val_var = self.prepare_input(var)
+                    val_var = prepare_input(var)
                     val_S = torch.cat((val_S, val_var), 2)
                     deltas = self.model(val_S)
                     losses = self.loss(deltas[:,:,0], S, payoff, var, costs, deltas[:,:,1])

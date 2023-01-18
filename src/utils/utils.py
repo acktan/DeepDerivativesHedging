@@ -1,6 +1,7 @@
 """Store utils functions"""
 
 import logging
+import torch
 
 logger = logging.getLogger("main_logger")
 
@@ -44,3 +45,16 @@ def my_get_logger(path_log, log_level, my_name=""):
     logger.addHandler(handler)
 
     return logger
+
+def prepare_input(S):
+    """Standardize at row level.
+
+    Args:
+        S: tensor of stock prices.
+    Returns:
+        S: tensor of standardized stock prices.   
+    """
+    S_mean = torch.mean(S.squeeze(), 0)[-1]
+    S_std = torch.std(S.squeeze(), 0)[-1]
+    S = (S[:, :-1, :] - S_mean)/S_std
+    return S

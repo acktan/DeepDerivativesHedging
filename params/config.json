@@ -19,7 +19,7 @@
 "path_log":"params/logs.log",
 "log_level":"DEBUG",
 
-"model_init":{"bs_model":false,
+"model_init":{"bs_model":true,
 "cost_bs":0.0,
 "cost_hest":0.01,
 "batch_size":256,
