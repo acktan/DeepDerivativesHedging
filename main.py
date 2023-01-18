@@ -59,14 +59,14 @@ def main(logger, conf):
         logger.debug(
             "Time to load a saved model:" + str(time_3 - time_2)
         )
-
+    '''
     inference_class = Inference(conf, model)
     inference_class.save_predictions()
     time_4 = time()
     logger.debug(
         "Time to make predictions:" + str(time_4 - time_3)
     )
-
+    '''
 if __name__ == "__main__":
     path_conf = "params/config.json"
     conf = json.load(open(path_conf, "r"))

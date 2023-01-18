@@ -3,6 +3,7 @@
 import logging
 import warnings
 import time
+import torch
 import matplotlib.pyplot as plt
 import matplotlib.style as style
 
@@ -11,12 +12,10 @@ logger = logging.getLogger("main_logger")
 
 class Evaluator():
     """Evaluate the model and save an image."""
-    def __init__(self, conf, train_loss, val_loss):
+    def __init__(self, conf):
         self.conf = conf
-        self.train_loss = train_loss
-        self.val_loss = val_loss
     
-    def evaluate_model(self):
+    def evaluate_model(self, train_loss, val_loss):
         """Evaluate the training model and save an image.
         Args:
             history: history of the fitted model.
@@ -34,8 +33,6 @@ class Evaluator():
         else:
             evaluation_file = evaluation_file + "_hest_" + timestr + ".jpg"
         path = directory + output_folder + eval_folder + evaluation_file
-        val_loss = self.val_loss
-        train_loss = self.train_loss
 
         epochs = len(train_loss)
 
@@ -52,3 +49,22 @@ class Evaluator():
         plt.show()
         plt.clf()
         return None
+    
+    def evaluate_train_dataset(self, model, S, v, payoff, train_class):
+        """Evaluate the model on the full training data.
+        Args:
+            model:
+            S, v, payoff: the input stock prices, the variance swap (only for Heston) and the payoff.
+        Return:
+            Print the emprirical risk measure on the full training set.
+        """
+        S = torch.Tensor(S).unsqueeze(-1)
+        payoff = torch.Tensor(payoff)
+        if self.conf["model_init"]["bs_model"]:
+            costs = torch.Tensor([0.0] * train_S.shape[0])
+            var = torch.Tensor([0.0] * train_S.shape[0])
+            deltas = model(S)
+            loss = train_class.loss(deltas, S, payoff, var, costs)
+            train_class.evaluation(loss)
+        
+        

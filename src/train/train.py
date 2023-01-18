@@ -34,7 +34,7 @@ class Train():
         self.q1 = torch.tensor((0.), dtype=torch.float32, requires_grad=True, device=device)
         self.q2 = torch.tensor((0.), dtype=torch.float32, requires_grad=True, device=device)
     
-    def loss(self, deltas, S, payoff, var, costs):
+    def loss(self, deltas, S, payoff, var, costs, deltas_V=None):
         """Calculate loss incurred.
         
         Args:
@@ -54,10 +54,13 @@ class Train():
         costs_S = costs * torch.diagonal(torch.matmul(delta_diff, S))
         loss = payoff.squeeze() - delta_S + costs_S
         if not self.conf["model_init"]["bs_model"]:
-            costs_V = costs * torch.diagonal(torch.matmul(delta_diff, var))
+            first_element = torch.abs(deltas_V[:,0]).unsqueeze(-1)
+            third_element = torch.abs(deltas_V[:,-1]).unsqueeze(-1)
+            delta_diff_v = torch.cat([first_element, torch.abs(torch.diff(deltas, dim=1)), third_element], dim=1)
+            costs_V = costs * torch.diagonal(torch.matmul(delta_diff_v, var))
             V_delta = torch.diff(var, dim=1)
             V_delta_T = torch.transpose(V_delta, 0, 1).squeeze()
-            delta_var = torch.diagonal(torch.matmul(deltas, V_delta_T))
+            delta_var = torch.diagonal(torch.matmul(deltas_V, V_delta_T))
             loss = loss - delta_var + costs_V
         return loss
     
@@ -101,8 +104,8 @@ class Train():
         Returns:
             S: tensor of standardized stock prices.   
         """
-        S_mean = torch.mean(S, 1, True)
-        S_std = torch.std(S, 1, True).unsqueeze(-1)
+        S_mean = torch.mean(S.squeeze(), 0)[-1]
+        S_std = torch.std(S.squeeze(), 0)[-1]
         S = (S[:, :-1, :] - S_mean)/S_std
         return S
     
@@ -136,12 +139,16 @@ class Train():
                 costs = train_costs.to(device)
                 
                 train_S = self.prepare_input(S)
-                if not self.conf["model_init"]["bs_model"]:
-                    #train_var = self.prepare_input(var)
-                    train_S = torch.cat((train_S, var), 2)
+                if self.conf["model_init"]["bs_model"]:
+                    deltas = self.model(train_S)
+                    losses = self.loss(deltas, S, payoff, var, costs)
+                else:
+                    train_var = self.prepare_input(var)
+                    train_S = torch.cat((train_S, train_var), 2)
+                    logger.info(f"shape:{self.model(train_S).shape}")
+                    deltas = self.model(train_S)
+                    losses = self.loss(deltas[:,:,0], S, payoff, var, costs, deltas[:,:,1])
                     
-                deltas = self.model(train_S)
-                losses = self.loss(deltas, S, payoff, var, costs)
                 training_loss = self.risk_measure(losses, self.q1, self.q2)
                 running_loss += training_loss.item()
 
@@ -163,15 +170,18 @@ class Train():
                 var = val_var.to(device).unsqueeze(-1)
                 payoff = val_payoff.to(device)
                 costs = val_costs.to(device)
-                
                 val_S = self.prepare_input(S)
-                if not self.conf["model_init"]["bs_model"]:
+                
+                if self.conf["model_init"]["bs_model"]:
+                    deltas = self.model(val_S)
+                    losses = self.loss(deltas, S, payoff, var, costs)
+                else:
                     val_var = self.prepare_input(var)
                     val_S = torch.cat((val_S, val_var), 2)
+                    deltas = self.model(val_S)
+                    losses = self.loss(deltas[:,:,0], S, payoff, var, costs, deltas[:,:,1])
                     
-                deltas = self.model(val_S)
-                losses = self.loss(deltas, S, payoff, var, costs)
-                validation_loss = self.evaluation(losses)
+                validation_loss = self.risk_measure(losses, self.q1, self.q2)
                 running_loss_val += validation_loss.item()
 
             epoch_val_loss = running_loss_val / counter

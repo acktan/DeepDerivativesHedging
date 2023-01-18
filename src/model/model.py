@@ -50,10 +50,10 @@ class DeepHedging_Hest(nn.Module):
                                 hidden_size=HL_size,
                                 num_layers=1)
         self.linear = torch.nn.Linear(HL_size, output_size)
-        self.softplus = torch.nn.Softplus()
+        #self.softplus = torch.nn.Softplus()
     def forward(self, S):
         """Create the forward function for the model."""
         out, _ = self.rnn(S)
         out = self.linear(out)
-        out = self.softplus(out)
+        #out = self.softplus(out)
         return out.squeeze()  

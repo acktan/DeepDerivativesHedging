@@ -19,11 +19,11 @@
 "path_log":"params/logs.log",
 "log_level":"DEBUG",
 
-"model_init":{"bs_model":true,
+"model_init":{"bs_model":false,
 "cost_bs":0.0,
 "cost_hest":0.01,
 "batch_size":256,
-"train":false},
+"train":true},
 
 "BS_model":{"input_size":1,
   "HL_size":16,
@@ -33,7 +33,7 @@
 },
 "Hest_model":{"input_size":2,
   "HL_size":16,
-  "output_size":1,
+  "output_size":2,
   "lr":0.01,
   "num_epochs":50
 }
