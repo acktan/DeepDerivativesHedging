@@ -53,7 +53,7 @@ Model folder includes the two best models that we used in the Black Scholes and 
 ### 🔢 Params 
 Params folder includes the configuration file and a logs.log file that is added to view the log info and debug
 ### ℹ️ src
-The src folder contains all the different classes combined in the main.py file. The following is a description of all classes used.
+The Src folder contains all the different classes used in the main.py file to run the pipeline. The following is a description of all classes used.
 
 #### Evaluation
 
