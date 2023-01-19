@@ -107,16 +107,21 @@ class Train():
         """
         train_loss = []
         val_loss = []
-        num_epochs = self.conf["BS_model"]["num_epochs"]
-        learning_rate = self.conf["BS_model"]["lr"]
+        if self.conf["model_init"]["bs_model"]:
+            num_epochs = self.conf["BS_model"]["num_epochs"]
+            learning_rate = self.conf["BS_model"]["lr"]
+        else:
+            num_epochs = self.conf["Hest_model"]["num_epochs"]
+            learning_rate = self.conf["Hest_model"]["lr"]
         optimizer = optim.Adam(list(self.model.parameters()) + [self.q1, self.q2], lr=learning_rate)
         
         for epoch in tqdm(range(num_epochs)):
             self.model.train()
             running_loss = 0.0
             counter = 0
-
+            
             for train_S, train_var, train_payoff, train_costs in self.train_loader:
+                #logger.info("size of input1 : {}".format(train_S.size()))
                 counter += 1
 
                 # Calculate gradients and update model weights
@@ -133,6 +138,8 @@ class Train():
                 else:
                     train_var = prepare_input(var)
                     train_S = torch.cat((train_S, train_var), 2)
+                    #logger.info("size of input2 : {}".format(train_S.size()))
+                    #logger.info("epoch number : {}".format(epoch))
                     deltas = self.model(train_S)
                     losses = self.loss(deltas[:,:,0], S, payoff, var, costs, deltas[:,:,1])
                     
@@ -148,7 +155,7 @@ class Train():
 
             running_loss_val = 0.0
             counter = 0
-
+            
             for val_S, val_var, val_payoff, val_costs in self.val_loader:
                 self.model.eval()
 
@@ -164,7 +171,7 @@ class Train():
                     losses = self.loss(deltas, S, payoff, var, costs)
                 else:
                     val_var = prepare_input(var)
-                    val_S = torch.cat((val_S, val_var), 2)
+                    val_S = torch.cat((val_S, val_var), 2).to(device)
                     deltas = self.model(val_S)
                     losses = self.loss(deltas[:,:,0], S, payoff, var, costs, deltas[:,:,1])
                     
