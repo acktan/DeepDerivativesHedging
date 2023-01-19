@@ -14,7 +14,7 @@ pip install -r requirements.txt
 ```
 
 To run the model go to the console and run following command: 
-
+ 
 ```
 python main.py
 ```
