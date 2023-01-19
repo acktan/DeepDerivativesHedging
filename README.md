@@ -14,14 +14,14 @@ pip install -r requirements.txt
 ```
 
 To run the model go to the console and run following command: 
-
+ 
 ```
 python main.py
 ```
 
 ## 🗂 Repository structure
 
-Our repository is structured in the following way
+Our repository is structured in the following way:
 
 ```
 |natives_deephedging
@@ -45,15 +45,14 @@ Our repository is structured in the following way
 ```
 
 ### 📊 Data
-The Data folder contains all dataset used to train the models
+The Data folder contains all the datasets used to train the models and the test input datasets used for inference.
 ### ↗️ Output
 In the Output folder we have the evaluation folder that includes the validation and training loss figure as evaluation of our train model.
 Inference folder contains the predicted deltas of our models. 
 Model folder includes the two best models that we used in the Black Scholes and Heston case.
 ### 🔢 Params 
 Params folder includes the configuration file and a logs.log file that is added to view the log info and debug
-### ℹ️ Src
-
+### ℹ️ src
 The src folder contains all the different classes combined in the main.py file. The following is a description of all classes used.
 
 #### Evaluation
