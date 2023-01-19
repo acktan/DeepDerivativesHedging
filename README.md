@@ -1,92 +1,133 @@
-# Natives_DeepHedging
+# Natixis DeepHedging Project X-HEC DSB 2023
 
-Deep Hedging of Stock options to minimise risk
+Recent progress achieved in data science and deep learning make a model independent approach for hedging possible
+These hedging approaches well known as deep hedging are machine learning algorithms able to consider market frictions as well as trading constraints without using risk sensitivities metrics computed by pricing models.
+The objective of the challenge is to replace classical hedging strategies founded on the calculation of risk sensitivities (Greeks) by machine learning algorithms.
 
-## Getting started
 
-To make it easy for you to get started with GitLab, here's a list of recommended next steps.
+## 🚀 Getting started with the repository
 
-Already a pro? Just edit this README.md and make it your own. Want to make it easy? [Use the template at the bottom](#editing-this-readme)!
-
-## Add your files
-
-- [ ] [Create](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#create-a-file) or [upload](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#upload-a-file) files
-- [ ] [Add files using the command line](https://docs.gitlab.com/ee/gitlab-basics/add-file.html#add-a-file-using-the-command-line) or push an existing Git repository with the following command:
-
+To ensure that all libraries are installed pip install the requirements file:
+ 
 ```
-cd existing_repo
-git remote add origin https://gitlab.code.hfactory.io/michael.liersch/natives_deephedging.git
-git branch -M main
-git push -uf origin main
+pip install -r requirements.txt
 ```
 
-## Integrate with your tools
+To run the model go to the console and run following command: 
+ 
+```
+python main.py
+```
 
-- [ ] [Set up project integrations](https://gitlab.code.hfactory.io/michael.liersch/natives_deephedging/-/settings/integrations)
+You should be at the source of the repository structure (ie. natives_deephedging) when running the command.
 
-## Collaborate with your team
+## 🗂 Repository structure
 
-- [ ] [Invite team members and collaborators](https://docs.gitlab.com/ee/user/project/members/)
-- [ ] [Create a new merge request](https://docs.gitlab.com/ee/user/project/merge_requests/creating_merge_requests.html)
-- [ ] [Automatically close issues from merge requests](https://docs.gitlab.com/ee/user/project/issues/managing_issues.html#closing-issues-automatically)
-- [ ] [Enable merge request approvals](https://docs.gitlab.com/ee/user/project/merge_requests/approvals/)
-- [ ] [Automatically merge when pipeline succeeds](https://docs.gitlab.com/ee/user/project/merge_requests/merge_when_pipeline_succeeds.html)
+Our repository is structured in the following way:
 
-## Test and Deploy
+```
+|natives_deephedging
+   |--data
+   |--output
+   |-----evaluation
+   |-----inference
+   |-----model
+   |--params
+   |--src
+   |-----evaluation
+   |-----inference
+   |-----loading
+   |-----model
+   |-----preprocessing
+   |-----train
+   |-----utils
+   |--main.py
+   |--README.md
+   |--requirements.txt
+```
 
-Use the built-in continuous integration in GitLab.
+### 📊 Data
+The Data folder contains all the datasets used to train the models and the test input datasets used for inference.
+### ↗️ Output
+In the Output folder we have the evaluation folder that includes the validation and training loss figure as evaluation of our train model.
+Inference folder contains the predicted deltas of our models. 
+Model folder includes the two best models that we used in the Black Scholes and Heston case.
+### 🔢 Params 
+Params folder includes the configuration file and a logs.log file that is added to view the log info and debug
+### ℹ️ src
+The src folder contains all the different classes combined in the main.py file. The following is a description of all classes used.
 
-- [ ] [Get started with GitLab CI/CD](https://docs.gitlab.com/ee/ci/quick_start/index.html)
-- [ ] [Analyze your code for known vulnerabilities with Static Application Security Testing(SAST)](https://docs.gitlab.com/ee/user/application_security/sast/)
-- [ ] [Deploy to Kubernetes, Amazon EC2, or Amazon ECS using Auto Deploy](https://docs.gitlab.com/ee/topics/autodevops/requirements.html)
-- [ ] [Use pull-based deployments for improved Kubernetes management](https://docs.gitlab.com/ee/user/clusters/agent/)
-- [ ] [Set up protected environments](https://docs.gitlab.com/ee/ci/environments/protected_environments.html)
+#### Evaluation
 
-***
+The function *evaluate_model* is a method of the Evaluator class. The method takes in two inputs, train_loss and val_loss, which are lists of the training loss and validation loss respectively. The function plots the training loss and validation loss on the same graph, with the x-axis being the number of epochs and the y-axis being the loss. The function also saves the graph to a file in a specified directory.
 
-# Editing this README
+The method *evaluate_train_dataset* takes in three inputs, *model*, *S*, *v*, *payoff*, and *train_class*. It first prepares the inputs, *S* and *v* by converting them to tensors and reshaping them. Then it calculates the loss by calling the loss method on *train_class* and passing in the model's predictions, deltas, the inputs, *S*, *payoff*, *var*, and *costs* as arguments. It also calculates a risk measure by calling the evaluation method on *train_class* and passing in the loss as an argument. The function then prints the risk measure calculated on the full training set.
 
-When you're ready to make this README your own, just edit this file and use the handy template below (or feel free to structure it however you want - this is just a starting point!). Thank you to [makeareadme.com](https://www.makeareadme.com/) for this template.
+#### Inference
 
-## Suggestions for a good README
-Every project is different, so consider which of these sections apply to yours. The sections used in the template are suggestions for most open source projects. Also keep in mind that while a README can be too long and detailed, too long is better than too short. If you think your README is too long, consider utilizing another form of documentation rather than cutting out information.
+The *Inference* class is used to make predictions on a test set, load test data, and save the predictions. The class takes in two inputs, conf which is a configuration file and model which is the trained model.
 
-## Name
-Choose a self-explaining name for your project.
+The *load_test_data_bs* method is used to load test data for the Black-Scholes model. It reads in a CSV file containing the test data and converts it into a numpy array. The array is then converted into a torch tensor and returned.
 
-## Description
-Let people know what your project can do specifically. Provide context and add a link to any reference visitors might be unfamiliar with. A list of Features or a Background subsection can also be added here. If there are alternatives to your project, this is a good place to list differentiating factors.
+The *load_test_data_hest* method is used to load test data for the Heston model. It reads in two CSV files, one for the stock prices and one for the variance swap, converts them into numpy arrays, and then converts them into torch tensors. It then returns the two tensors.
 
-## Badges
-On some READMEs, you may see small images that convey metadata, such as whether or not all the tests are passing for the project. You can use Shields to add some to your README. Many services also have instructions for adding a badge.
+The *predict* method takes in no inputs, and if the model used is the Black-Scholes model, it loads the test data, performs predictions on the test data using the trained model and returns the predictions as a Pandas dataframe. If the model is Heston model, it loads the test data, performs predictions on the test data using the trained model, separates the predictions into two dataframes, one for stock prices and one for variance swap and returns the two dataframes.
 
-## Visuals
-Depending on what you are making, it can be a good idea to include screenshots or even a video (you'll frequently see GIFs rather than actual videos). Tools like ttygif can help, but check out Asciinema for a more sophisticated method.
+The *save_predictions* method takes in no inputs and is used to save the predictions in a CSV file. It creates a new CSV file in a specified directory, and saves the predictions in the file.
 
-## Installation
-Within a particular ecosystem, there may be a common way of installing things, such as using Yarn, NuGet, or Homebrew. However, consider the possibility that whoever is reading your README is a novice and would like more guidance. Listing specific steps helps remove ambiguity and gets people to using your project as quickly as possible. If it only runs in a specific context like a particular programming language version or operating system or has dependencies that have to be installed manually, also add a Requirements subsection.
+#### Loading
+The *DataLoader* class is used to load the data for training a model. It takes in one input, conf which is a configuration file. The class contains several methods that are used to process and load the training data.
 
-## Usage
-Use examples liberally, and show the expected output if you can. It's helpful to have inline the smallest example of usage that you can demonstrate, while providing links to more sophisticated examples if they are too long to reasonably include in the README.
+The *col_numeric_names* method takes in a dataframe as an input, and returns the same dataframe with column names from 0 to 30.
 
-## Support
-Tell people where they can go to for help. It can be any combination of an issue tracker, a chat room, an email address, etc.
+The *absolute_growth* method takes in a dataframe containing stock prices as an input and returns a dataframe containing the absolute growth in stock price for each path in the dataframe.
 
-## Roadmap
-If you have ideas for releases in the future, it is a good idea to list them in the README.
+The *percentage_growth* method takes in a dataframe containing stock prices as an input and returns a dataframe containing the percentage growth in stock price for each path in the dataframe.
 
-## Contributing
-State if you are open to contributions and what your requirements are for accepting them.
+The *return_filenames* method takes in no input and returns the names of files within the input directory.
 
-For people who want to make changes to your project, it's helpful to have some documentation on how to get started. Perhaps there is a script that they should run or some environment variables that they need to set. Make these steps explicit. These instructions could also be useful to your future self.
+The *get_train_data* method is used to return the training data for Black & Scholes or Heston model. It reads in a CSV file containing the stock prices, variance swap (only for Heston) and payoffs. It returns the training data in the form of dataframes containing stock prices, variance swap and payoffs.
 
-You can also document commands to lint the code or run tests. These steps help to ensure high code quality and reduce the likelihood that the changes inadvertently break something. Having instructions for running tests is especially helpful if it requires external setup, such as starting a Selenium server for testing in a browser.
+#### Model
 
-## Authors and acknowledgment
-Show your appreciation to those who have contributed to the project.
+The *DeepHedging_BS* and *DeepHedging_Hest* classes are used to create the model architecture for the Black-Scholes (BS) and Heston models respectively. Both classes are subclasses of the torch.nn.Module and they use the Pytorch library to define the architecture.
 
-## License
-For open source projects, say how it is licensed.
+The *DeepHedging_BS* class initializes the following:
 
-## Project status
-If you have run out of energy or time for your project, put a note at the top of the README saying that development has slowed down or stopped completely. Someone may choose to fork your project or volunteer to step in as a maintainer or owner, allowing your project to keep going. You can also make an explicit request for maintainers.
+An RNN (Recurrent Neural Network) layer with input size, hidden size and number of layers as specified in the config file.
+A linear layer with hidden size and output size as specified in the config file.
+The DeepHedging_Hest class initializes the following:
+
+   - An RNN (Recurrent Neural Network) layer with input size, hidden size and number of layers as specified in the config file.
+   - A linear layer with hidden size and output size as specified in the config file.
+
+Both the classes have a forward function that takes in a tensor S and processes it through the initialized layers. The output of the linear layer is returned and the size of the output is reduced by one dimension.
+
+#### Preprocessing
+
+The *DataPreprocessor* class is used to preprocess and split the training data into validation and training sets, and return dataloaders for both sets. The class takes in four inputs: conf which is a configuration file, df_train which is a dataframe with stock prices for the train set, pay_off which is a dataframe with payoffs for the train set, and df_growth which is a dataframe with absolute growth of stock prices for the train set.
+
+The *train_val_split* method takes in one input, split_percent, which is the percentage of data that is for training, and returns four or eight outputs depending on the model used, train_X and val_X, which are training and validation tensors of stock prices, train_payoff and val_payoff, which are training and validation tensors of payoffs, train_costs and val_costs, which are training and validation tensors of costs, and if the model used is Heston, train_var and val_var, which are training and validation variance swap.
+
+The *get_train_val_dataloader* method takes no inputs and returns two outputs, train_loader and val_loader, which are torch dataloaders for the training and validation sets. The dataloaders are created by creating a TensorDataset for the train and val sets, and then creating a DataLoader for each set with a specified batch size.
+
+#### Train
+
+The *Train* class is used to train an RNN model, either the Black-Scholes (BS) model or the Heston model. It takes in the config file, the model, the training dataloader and the validation dataloader as inputs. The class has several methods, including "loss()" that calculates the loss incurred by the predicted deltas, and "risk_measure()" which calculates a custom loss function for the BS Model. The "Train()" method is responsible for training the model, it uses the Adam optimizer, and it prints out the training and validation losses for each epoch. The class also has a method called "test()" which can be used to evaluate the performance of the trained model on unseen data. The model is trained on a device specified as CUDA if available or CPU.
+
+### ❤️ Main.py
+
+This python file serves as the main script and heart of the repository that runs the entire pipeline for the project. It starts by loading the config file and setting the random seed. Then it calls the DataLoader class to load the stock prices, variances and payoff. Next, it calls the DataPreprocessor class to split the data into training and validation sets and create dataloaders. Then, it calls the model class to create the model architecture. Then, it calls the Train class to train the model and save it or load a saved model. Next, it calls the Inference class to make predictions and saves them. Finally, it calls the Evaluator class to evaluate the performance of the model. The script also has a try-except block to catch any errors that might occur during the execution and log them. The script also has various debug statements to log the time taken for each step of the pipeline.
+
+
+## 📫 Contacts LinkedIn 
+
+If you have any feedback, please reach out to us on LinkedIN!!!
+
+- [Lea Chader](https://www.linkedin.com/in/lea-chader/)
+- [Inès Benito](https://www.linkedin.com/in/ines-benito/)
+- [Kun Tan](https://www.linkedin.com/in/kun-tan/)
+- [Milos Basic](https://www.linkedin.com/in/milos-basic/)
+- [Salah Mahmoudi](https://www.linkedin.com/in/salahmahmoudi/)
+- [Michael Liersch](https://www.linkedin.com/in/michael-liersch/)
+
