@@ -8,7 +8,7 @@ The objective of the challenge is to replace classical hedging strategies founde
 ## 🚀 Getting started with the repository
 
 To ensure that all libraries are installed pip install the requirements file:
-
+ 
 ```
 pip install -r requirements.txt
 ```
