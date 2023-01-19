@@ -45,7 +45,7 @@ Our repository is structured in the following way
 ```
 
 ### 📊 Data
-The Data folder contains all dataset used to train the models
+The Data folder contains all datasets used to train the models and to make predictions.
 ### ↗️ Output
 In the Output folder we have the evaluation folder that includes the validation and training loss figure as evaluation of our train model.
 Inference folder contains the predicted deltas of our models. 
