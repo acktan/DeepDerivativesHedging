@@ -74,16 +74,14 @@ class Inference():
             test_X = test_X.unsqueeze(-1).to(device)
             test_X = prepare_input(test_X)
             test_prediction = self.model(test_X)
-            predictions = pd.DataFrame(test_prediction.detach().numpy())#.transpose())
+            predictions = pd.DataFrame(test_prediction.cpu().detach().numpy())#.transpose())
             return predictions
         else:
             test_S, test_var = self.load_test_data_hest()
             test_S = prepare_input(test_S.unsqueeze(-1)).to(device)
             test_var = prepare_input(test_var.unsqueeze(-1)).to(device)
             test_X = torch.cat((test_S, test_var), 2)
-            hidden = torch.empty(self.conf["Hest_model"]["num_layers"], test_X.shape[0], self.conf["Hest_model"]["HL_size"]).to(device)
-            hidden = torch.nn.init.xavier_uniform_(hidden).requires_grad_()
-            test_prediction, hidden = self.model(test_X, hidden)
+            test_prediction = self.model(test_X)
             predictions_S = pd.DataFrame(test_prediction[:,:,0].cpu().detach().numpy())#.transpose())
             predictions_V = pd.DataFrame(test_prediction[:,:,1].cpu().detach().numpy())#.transpose())
             return predictions_S, predictions_V

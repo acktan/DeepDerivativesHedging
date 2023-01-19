@@ -120,8 +120,6 @@ class Train():
             running_loss = 0.0
             counter = 0
             
-            hidden = torch.empty(self.conf["Hest_model"]["num_layers"], self.conf["model_init"]["batch_size"], self.conf["Hest_model"]["HL_size"]).to(device)
-            hidden = torch.nn.init.xavier_uniform_(hidden).requires_grad_()
             for train_S, train_var, train_payoff, train_costs in self.train_loader:
                 #logger.info("size of input1 : {}".format(train_S.size()))
                 counter += 1
@@ -142,8 +140,7 @@ class Train():
                     train_S = torch.cat((train_S, train_var), 2)
                     #logger.info("size of input2 : {}".format(train_S.size()))
                     #logger.info("epoch number : {}".format(epoch))
-                    deltas, hidden = self.model(train_S, hidden)
-                    hidden = hidden.detach()
+                    deltas = self.model(train_S)
                     losses = self.loss(deltas[:,:,0], S, payoff, var, costs, deltas[:,:,1])
                     
                 training_loss = self.risk_measure(losses, self.q1, self.q2)
@@ -159,8 +156,6 @@ class Train():
             running_loss_val = 0.0
             counter = 0
             
-            hidden = torch.empty(self.conf["Hest_model"]["num_layers"], self.conf["model_init"]["batch_size"], self.conf["Hest_model"]["HL_size"]).to(device)
-            hidden = torch.nn.init.xavier_uniform_(hidden).requires_grad_()
             for val_S, val_var, val_payoff, val_costs in self.val_loader:
                 self.model.eval()
 
@@ -177,7 +172,7 @@ class Train():
                 else:
                     val_var = prepare_input(var)
                     val_S = torch.cat((val_S, val_var), 2).to(device)
-                    deltas, hidden = self.model(val_S, hidden)
+                    deltas = self.model(val_S)
                     losses = self.loss(deltas[:,:,0], S, payoff, var, costs, deltas[:,:,1])
                     
                 validation_loss = self.risk_measure(losses, self.q1, self.q2)

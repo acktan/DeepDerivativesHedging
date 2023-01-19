@@ -65,8 +65,7 @@ class Evaluator():
         S = torch.Tensor(np.array(S)).unsqueeze(-1).to(device)
         S_input = prepare_input(S)
         payoff = torch.Tensor(np.array(payoff)).to(device)
-        hidden = torch.empty(self.conf["Hest_model"]["num_layers"], S.shape[0], self.conf["Hest_model"]["HL_size"]).to(device)
-        hidden = torch.nn.init.xavier_uniform_(hidden).requires_grad_()
+
         if self.conf["model_init"]["bs_model"]:
             costs = torch.Tensor([0.0] * S.shape[0]).to(device)
             var = torch.Tensor([0.0] * S.shape[0]).to(device)
@@ -80,7 +79,7 @@ class Evaluator():
             var = torch.Tensor(np.array(v)).unsqueeze(-1).to(device)
             var_input = prepare_input(var)
             S_input = torch.cat((S_input, var_input), 2)
-            deltas, hidden = model(S_input, hidden)
+            deltas = model(S_input)
             loss = train_class.loss(deltas[:,:,0], S, payoff, var, costs, deltas[:,:,1])
             risk_measure = train_class.evaluation(loss)
             logger.info(f"The risk measure on the train set is:{risk_measure}")
