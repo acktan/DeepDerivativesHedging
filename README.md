@@ -13,11 +13,13 @@ To ensure that all libraries are installed pip install the requirements file:
 pip install -r requirements.txt
 ```
 
-To run the model go to the console and run following command (you should be at the source of the repository structure): 
+To run the model go to the console and run following command: 
  
 ```
 python main.py
 ```
+
+You should be at the source of the repository structure (ie. natives_deephedging) when running the command.
 
 ## 🗂 Repository structure
 
