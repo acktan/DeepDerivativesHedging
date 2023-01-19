@@ -1,4 +1,4 @@
-{"paths":{"directory":"/home/jovyan/natives_deephedging/",
+{"paths":{"directory":"/home/jovyan/natixis/natives_deephedging/",
 "input_folder":"data/",
 "train_data_bs":"Dataset_1_train_asset.csv",
 "train_data_hest_1":"Dataset_2_train_instrument_1.csv",
@@ -37,6 +37,6 @@
   "output_size":2,
   "lr":0.005,
   "num_epochs":100,
-  "num_layers":8
+  "num_layers":5
 }
 }

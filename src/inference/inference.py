@@ -9,6 +9,9 @@ from src.utils.utils import prepare_input
 warnings.filterwarnings("ignore")
 logger = logging.getLogger("main_logger")
 
+device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+
+
 class Inference():
     """Load test data, predict data and save predictions.
 
@@ -65,21 +68,24 @@ class Inference():
         Returns:
             The predictions dataframe.
         """
+        
         if self.conf["model_init"]["bs_model"]:
             test_X = self.load_test_data_bs()
-            test_X = test_X.unsqueeze(-1)
+            test_X = test_X.unsqueeze(-1).to(device)
             test_X = prepare_input(test_X)
             test_prediction = self.model(test_X)
             predictions = pd.DataFrame(test_prediction.detach().numpy())#.transpose())
             return predictions
         else:
             test_S, test_var = self.load_test_data_hest()
-            test_S = prepare_input(test_S.unsqueeze(-1))
-            test_var = prepare_input(test_var.unsqueeze(-1))
+            test_S = prepare_input(test_S.unsqueeze(-1)).to(device)
+            test_var = prepare_input(test_var.unsqueeze(-1)).to(device)
             test_X = torch.cat((test_S, test_var), 2)
-            test_prediction = self.model(test_X)
-            predictions_S = pd.DataFrame(test_prediction[:,:,0].detach().numpy())#.transpose())
-            predictions_V = pd.DataFrame(test_prediction[:,:,1].detach().numpy())#.transpose())
+            hidden = torch.empty(self.conf["Hest_model"]["num_layers"], test_X.shape[0], self.conf["Hest_model"]["HL_size"]).to(device)
+            hidden = torch.nn.init.xavier_uniform_(hidden).requires_grad_()
+            test_prediction, hidden = self.model(test_X, hidden)
+            predictions_S = pd.DataFrame(test_prediction[:,:,0].cpu().detach().numpy())#.transpose())
+            predictions_V = pd.DataFrame(test_prediction[:,:,1].cpu().detach().numpy())#.transpose())
             return predictions_S, predictions_V
     
     def save_predictions(self):

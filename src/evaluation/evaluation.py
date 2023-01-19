@@ -12,6 +12,8 @@ from src.utils.utils import prepare_input
 warnings.filterwarnings("ignore")
 logger = logging.getLogger("main_logger")
 
+device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+
 class Evaluator():
     """Evaluate the model and save an image."""
     def __init__(self, conf):
@@ -60,24 +62,25 @@ class Evaluator():
         Return:
             Print the emprirical risk measure on the full training set.
         """
-        S = torch.Tensor(np.array(S)).unsqueeze(-1)
-        logger.info(f"shape:{S.shape}")
+        S = torch.Tensor(np.array(S)).unsqueeze(-1).to(device)
         S_input = prepare_input(S)
-        payoff = torch.Tensor(np.array(payoff))
+        payoff = torch.Tensor(np.array(payoff)).to(device)
+        hidden = torch.empty(self.conf["Hest_model"]["num_layers"], S.shape[0], self.conf["Hest_model"]["HL_size"]).to(device)
+        hidden = torch.nn.init.xavier_uniform_(hidden).requires_grad_()
         if self.conf["model_init"]["bs_model"]:
-            costs = torch.Tensor([0.0] * S.shape[0])
-            var = torch.Tensor([0.0] * S.shape[0])
+            costs = torch.Tensor([0.0] * S.shape[0]).to(device)
+            var = torch.Tensor([0.0] * S.shape[0]).to(device)
             deltas = model(S_input)
             loss = train_class.loss(deltas, S, payoff, var, costs)
             risk_measure = train_class.evaluation(loss)
             logger.info(f"The risk measure on the train set is:{risk_measure}")
         else:
             cost = self.conf["model_init"]["cost_hest"]
-            costs = torch.Tensor([cost] * S.shape[0])
-            var = torch.Tensor(np.array(v)).unsqueeze(-1)
+            costs = torch.Tensor([cost] * S.shape[0]).to(device)
+            var = torch.Tensor(np.array(v)).unsqueeze(-1).to(device)
             var_input = prepare_input(var)
             S_input = torch.cat((S_input, var_input), 2)
-            deltas = model(S_input)
+            deltas, hidden = model(S_input, hidden)
             loss = train_class.loss(deltas[:,:,0], S, payoff, var, costs, deltas[:,:,1])
             risk_measure = train_class.evaluation(loss)
             logger.info(f"The risk measure on the train set is:{risk_measure}")

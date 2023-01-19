@@ -75,13 +75,15 @@ class DataPreprocessor():
         """   
         (train_S, val_S, train_payoff, val_payoff,
          train_costs, val_costs, train_var, val_var) = self.train_val_split()
+        logger.info("Size of trainS: {}".format(train_S.size()))
+        
         batch_size = self.conf["model_init"]["batch_size"]
         dataset_train = torch.utils.data.TensorDataset(train_S, train_var,
                                                        train_payoff, train_costs)
         dataset_val = torch.utils.data.TensorDataset(val_S, val_var,
                                                      val_payoff, val_costs)
         
-        train_loader = torch.utils.data.DataLoader(dataset_train, batch_size=batch_size, shuffle=True)
-        val_loader = torch.utils.data.DataLoader(dataset_val, batch_size=batch_size, shuffle=False)
+        train_loader = torch.utils.data.DataLoader(dataset_train, batch_size=batch_size, shuffle=True, drop_last=True)
+        val_loader = torch.utils.data.DataLoader(dataset_val, batch_size=batch_size, shuffle=False, drop_last=True)
         return train_loader, val_loader
         
