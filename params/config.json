@@ -1,4 +1,4 @@
-{"paths":{"directory":"/home/jovyan/natixis/natives_deephedging/",
+{"paths":{"directory":"/home/jovyan/natives_deephedging/",
 "input_folder":"data/",
 "train_data_bs":"Dataset_1_train_asset.csv",
 "train_data_hest_1":"Dataset_2_train_instrument_1.csv",
@@ -19,7 +19,7 @@
 "path_log":"params/logs.log",
 "log_level":"DEBUG",
 
-"model_init":{"bs_model":true,
+"model_init":{"bs_model":false,
 "cost_bs":0.0,
 "cost_hest":0.01,
 "batch_size":256,
@@ -33,10 +33,10 @@
   "num_layers":8
 },
 "Hest_model":{"input_size":2,
-  "HL_size":16,
+  "HL_size":64,
   "output_size":2,
-  "lr":0.01,
-  "num_epochs":50,
-  "num_layers":5
+  "lr":0.005,
+  "num_epochs":100,
+  "num_layers":8
 }
 }
