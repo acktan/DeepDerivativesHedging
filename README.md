@@ -21,7 +21,7 @@ python main.py
 
 ## 🗂 Repository structure
 
-Our repository is structured in the following way
+Our repository is structured in the following way:
 
 ```
 |natives_deephedging
