@@ -54,7 +54,7 @@ Model folder includes the two best models that we used in the Black Scholes and 
 Params folder includes the configuration file and a logs.log file that is added to view the log info and debug
 ### ℹ️ Src
 
-The Src folder contains all the different classes combined in the main.py file. The following is a description of all classes used.
+The src folder contains all the different classes combined in the main.py file. The following is a description of all classes used.
 
 #### Evaluation
 
