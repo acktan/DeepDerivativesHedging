@@ -13,7 +13,7 @@ To ensure that all libraries are installed pip install the requirements file:
 pip install -r requirements.txt
 ```
 
-To run the model go to the console and run following command: 
+To run the model go to the console and run following command (you should be at the source of the repository structure): 
  
 ```
 python main.py
