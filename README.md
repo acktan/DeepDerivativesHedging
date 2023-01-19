@@ -1,4 +1,4 @@
-# Natixis DeepHedging Project X-HEC DSB 2023
+ # Natixis DeepHedging Project X-HEC DSB 2023
 
 Recent progress achieved in data science and deep learning make a model independent approach for hedging possible
 These hedging approaches well known as deep hedging are machine learning algorithms able to consider market frictions as well as trading constraints without using risk sensitivities metrics computed by pricing models.
