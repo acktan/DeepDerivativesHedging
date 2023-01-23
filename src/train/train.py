@@ -121,7 +121,6 @@ class Train():
             counter = 0
             
             for train_S, train_var, train_payoff, train_costs in self.train_loader:
-                #logger.info("size of input1 : {}".format(train_S.size()))
                 counter += 1
 
                 # Calculate gradients and update model weights
@@ -130,7 +129,6 @@ class Train():
                 var = train_var.to(device).unsqueeze(-1)
                 payoff = train_payoff.to(device)
                 costs = train_costs.to(device)
-                
                 train_S = prepare_input(S)
                 if self.conf["model_init"]["bs_model"]:
                     deltas = self.model(train_S)
@@ -138,8 +136,6 @@ class Train():
                 else:
                     train_var = prepare_input(var)
                     train_S = torch.cat((train_S, train_var), 2)
-                    #logger.info("size of input2 : {}".format(train_S.size()))
-                    #logger.info("epoch number : {}".format(epoch))
                     deltas = self.model(train_S)
                     losses = self.loss(deltas[:,:,0], S, payoff, var, costs, deltas[:,:,1])
                     
@@ -203,10 +199,14 @@ class Train():
         output_folder = self.conf["paths"]["output_folder"]
         model_out_folder = self.conf["paths"]["model_out_folder"]
         PATH = directory + output_folder + model_out_folder + model_name
+        if torch.cuda.is_available():
+            map_location=lambda storage, loc: storage.cuda(1)
+        else:
+            map_location=torch.device('cpu')
         if self.conf["model_init"]["bs_model"]:
             model_loaded = DeepHedging_BS(self.conf)
-            model_loaded.load_state_dict(torch.load(PATH))
+            model_loaded.load_state_dict(torch.load(PATH, map_location=map_location))
         else:
             model_loaded = DeepHedging_Hest(self.conf)
-            model_loaded.load_state_dict(torch.load(PATH))
+            model_loaded.load_state_dict(torch.load(PATH, map_location=map_location))
         return model_loaded

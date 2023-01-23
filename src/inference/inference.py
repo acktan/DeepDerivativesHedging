@@ -36,7 +36,7 @@ class Inference():
         input_folder = self.conf["paths"]["input_folder"]
         path_test = self.conf["paths"]["test_data_bs"]
         test_set = pd.read_csv(directory + input_folder + path_test, header=None)
-        test_X = np.array(test_set.iloc[:,:30].values.astype('float32'))
+        test_X = np.array(test_set.iloc[:,:].values.astype('float32'))
         test_X = torch.Tensor(test_X)
         return test_X
     
@@ -54,8 +54,8 @@ class Inference():
         path_var = self.conf["paths"]["test_data_hest_2"]
         test_S = pd.read_csv(directory + input_folder + path_S, header=None)
         test_var= pd.read_csv(directory + input_folder + path_var, header=None)
-        test_S = np.array(test_S.iloc[:,:30].values.astype('float32'))
-        test_var = np.array(test_var.iloc[:,:30].values.astype('float32'))
+        test_S = np.array(test_S.iloc[:,:].values.astype('float32'))
+        test_var = np.array(test_var.iloc[:,:].values.astype('float32'))
         test_S = torch.Tensor(test_S)
         test_var = torch.Tensor(test_var)
         return test_S, test_var

@@ -55,7 +55,7 @@ def main(logger, conf):
             "Time to create, train and evaluate the model:" + str(time_3 - time_2)
         )
     else:
-        model = train_class.load_saved_model("model_test_2_bs_20230117-175453")
+        model = train_class.load_saved_model("model_hest_20230119-161452")
         time_3 = time()
         logger.debug(
             "Time to load a saved model:" + str(time_3 - time_2)
